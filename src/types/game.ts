@@ -28,5 +28,7 @@ export interface GameContextType extends GameState {
   startGame: (playerNames: string[], mode: GameMode) => void;
   updateScore: (playerId: string, colIndex: number, rowKey: RowKey, value: number | null) => void;
   resetGame: () => void;
-  currentPlayerId: string | null; // Derived helper
+  currentPlayerId: string | null;
+  isGameComplete: boolean;
+  getWinner: () => { player: Player; total: number } | null;
 }

@@ -6,7 +6,6 @@ import ScoreInputModal from '../Input/ScoreInputModal';
 const ScoreTable = () => {
     const { players, mode, updateScore, currentPlayerId } = useGame();
 
-    // Modal State
     const [editingCell, setEditingCell] = useState<{
         playerId: string,
         colIndex: number,
@@ -20,28 +19,13 @@ const ScoreTable = () => {
     };
 
     const handleCellClick = (playerId: string, colIndex: number, rowKey: RowKey, val: number | null, playerName: string) => {
-        // LOCKING RULES:
-        // 1. Can only edit if it's this player's turn
         if (playerId !== currentPlayerId) return;
-        // 2. Can only edit empty cells (once filled, it's locked)
         if (val !== null) return;
-
         setEditingCell({ playerId, colIndex, rowKey, currentVal: val, playerName });
     };
 
     const handleInputConfirm = (val: number | null) => {
         if (editingCell) {
-            // If user confirms null (e.g. closes modal without entry), do nothing?
-            // Or if they explicitly enter 0 (Strich), that's a value.
-            // If they cancel, val might be null. We should only update if val is not null?
-            // Actually, standard modal onClose triggers 'setEditingCell(null)'.
-            // onConfirm triggers this. passing null means "Cancel" usually?
-            // My modal passes 'null' if empty but we want to allow 0.
-            // Let's assume onConfirm passes final number or we skip update if undefined.
-            // If user cancels, we shouldn't call updateScore at all.
-            // But ScoreInputModal calls onConfirm(null) currently if empty?
-            // If the user enters nothing and clicks 'Eintragen', maybe we shouldn't allow that.
-
             if (val !== null) {
                 updateScore(editingCell.playerId, editingCell.colIndex, editingCell.rowKey, val);
             }
@@ -50,11 +34,18 @@ const ScoreTable = () => {
     };
 
     return (
-        <div className="glass-panel" style={{ overflowX: 'auto', padding: '1rem', margin: '1rem 0' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+        <div className="glass-panel" style={{ overflowX: 'auto', padding: '1.25rem', margin: '1rem 0' }}>
+            <table className="score-table" style={{ minWidth: '600px' }}>
                 <thead>
                     <tr>
-                        <th style={{ textAlign: 'left', padding: '1rem', color: 'var(--text-muted)' }}>Name</th>
+                        <th style={{
+                            textAlign: 'left',
+                            padding: '1rem',
+                            color: 'var(--text-muted)',
+                            fontSize: '0.8rem'
+                        }}>
+                            Feld
+                        </th>
                         {players.map(p => {
                             const isActive = p.id === currentPlayerId;
                             return (
@@ -63,14 +54,31 @@ const ScoreTable = () => {
                                     colSpan={mode === '3-fach' ? 3 : 1}
                                     style={{
                                         padding: '1rem',
-                                        borderBottom: isActive ? '2px solid var(--accent-color)' : '1px solid rgba(255,255,255,0.1)',
-                                        background: isActive ? 'rgba(var(--hue-accent), 0.1)' : 'transparent',
+                                        background: isActive
+                                            ? 'linear-gradient(180deg, hsla(270, 70%, 50%, 0.15) 0%, transparent 100%)'
+                                            : 'transparent',
+                                        borderBottom: isActive
+                                            ? '2px solid var(--accent-color)'
+                                            : '1px solid rgba(255,255,255,0.08)',
                                         color: isActive ? 'var(--accent-color)' : 'var(--gold)',
-                                        fontSize: '1.2rem',
-                                        transition: 'all 0.3s ease'
+                                        fontSize: '1.1rem',
+                                        fontWeight: 700,
+                                        transition: 'all 0.3s ease',
+                                        position: 'relative'
                                     }}
                                 >
-                                    {p.name} {isActive && ' (Am Zug)'}
+                                    {p.name}
+                                    {isActive && (
+                                        <span style={{
+                                            display: 'block',
+                                            fontSize: '0.7rem',
+                                            fontWeight: 500,
+                                            marginTop: '0.25rem',
+                                            opacity: 0.8
+                                        }}>
+                                            Am Zug
+                                        </span>
+                                    )}
                                 </th>
                             );
                         })}
@@ -81,9 +89,23 @@ const ScoreTable = () => {
                             {players.map((_, i) => (
                                 <th key={i} colSpan={3} style={{ padding: 0, border: 'none' }}>
                                     <div style={{ display: 'flex' }}>
-                                        <div style={{ flex: 1, color: 'var(--text-muted)', fontSize: '0.8rem', textAlign: 'center' }}>x1</div>
-                                        <div style={{ flex: 1, color: 'var(--text-muted)', fontSize: '0.8rem', textAlign: 'center' }}>x2</div>
-                                        <div style={{ flex: 1, color: 'var(--text-muted)', fontSize: '0.8rem', textAlign: 'center' }}>x3</div>
+                                        {[1, 2, 3].map(mult => (
+                                            <div key={mult} style={{
+                                                flex: 1,
+                                                color: 'var(--text-muted)',
+                                                fontSize: '0.75rem',
+                                                textAlign: 'center',
+                                                padding: '0.5rem',
+                                                background: mult === 3
+                                                    ? 'rgba(255, 215, 0, 0.05)'
+                                                    : mult === 2
+                                                        ? 'rgba(255, 255, 255, 0.02)'
+                                                        : 'transparent',
+                                                fontWeight: 600
+                                            }}>
+                                                x{mult}
+                                            </div>
+                                        ))}
                                     </div>
                                 </th>
                             ))}
@@ -91,29 +113,63 @@ const ScoreTable = () => {
                     )}
                 </thead>
                 <tbody>
-                    {ROW_KEYS.map(key => (
-                        <tr key={key} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                            <td style={{ padding: '0.8rem', fontWeight: 'bold', color: 'var(--accent-color)' }}>
+                    {ROW_KEYS.map((key, rowIdx) => (
+                        <tr key={key} style={{
+                            borderBottom: '1px solid rgba(255,255,255,0.04)',
+                            background: rowIdx % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent'
+                        }}>
+                            <td style={{
+                                padding: '0.75rem 1rem',
+                                fontWeight: 700,
+                                color: ['S', 'F', 'P', 'G'].includes(key) ? 'var(--gold)' : 'var(--accent-color)',
+                                fontSize: '0.95rem'
+                            }}>
                                 {key}
                             </td>
                             {players.map(p => (
                                 p.columns.map((col, colIdx) => {
                                     const val = col[key];
+                                    const isClickable = p.id === currentPlayerId && val === null;
+                                    const multiplierBg = mode === '3-fach'
+                                        ? colIdx === 2
+                                            ? 'rgba(255, 215, 0, 0.03)'
+                                            : colIdx === 1
+                                                ? 'rgba(255, 255, 255, 0.01)'
+                                                : 'transparent'
+                                        : 'transparent';
+
                                     return (
                                         <td
                                             key={`${p.id}-${colIdx}`}
-                                            style={{ padding: '0.2rem', textAlign: 'center' }}
+                                            style={{
+                                                padding: '0.3rem',
+                                                textAlign: 'center',
+                                                background: multiplierBg
+                                            }}
                                         >
                                             <button
                                                 onClick={() => handleCellClick(p.id, colIdx, key, val, p.name)}
+                                                disabled={!isClickable}
                                                 style={{
                                                     width: '100%',
-                                                    background: val !== null ? 'rgba(255,255,255,0.1)' : 'transparent',
-                                                    color: val !== null ? 'white' : 'transparent',
-                                                    minHeight: '40px'
+                                                    minHeight: '42px',
+                                                    background: val !== null
+                                                        ? 'rgba(255,255,255,0.08)'
+                                                        : isClickable
+                                                            ? 'rgba(255,255,255,0.03)'
+                                                            : 'transparent',
+                                                    color: val !== null ? 'white' : 'rgba(255,255,255,0.2)',
+                                                    border: isClickable
+                                                        ? '1px dashed rgba(255,255,255,0.15)'
+                                                        : '1px solid transparent',
+                                                    fontSize: '1rem',
+                                                    fontWeight: val !== null ? 600 : 400,
+                                                    cursor: isClickable ? 'pointer' : 'default',
+                                                    opacity: !isClickable && val === null ? 0.4 : 1,
+                                                    transition: 'all 0.2s ease'
                                                 }}
                                             >
-                                                {val !== null ? val : '-'}
+                                                {val !== null ? val : '–'}
                                             </button>
                                         </td>
                                     );
@@ -123,11 +179,28 @@ const ScoreTable = () => {
                     ))}
 
                     {/* TOTAL ROW */}
-                    <tr style={{ borderTop: '2px solid var(--accent-color)', fontWeight: 'bold' }}>
-                        <td style={{ padding: '1rem', color: 'var(--gold)' }}>Total</td>
+                    <tr style={{
+                        borderTop: '2px solid var(--accent-color)',
+                        fontWeight: 700,
+                        background: 'rgba(255,255,255,0.02)'
+                    }}>
+                        <td style={{
+                            padding: '1rem',
+                            color: 'var(--text-muted)',
+                            fontSize: '0.85rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                        }}>
+                            Total
+                        </td>
                         {players.map(p => (
                             p.columns.map((col, colIdx) => (
-                                <td key={`total-${p.id}-${colIdx}`} style={{ textAlign: 'center', padding: '1rem', color: 'var(--gold)' }}>
+                                <td key={`total-${p.id}-${colIdx}`} style={{
+                                    textAlign: 'center',
+                                    padding: '1rem',
+                                    color: 'var(--gold)',
+                                    fontSize: '1.1rem'
+                                }}>
                                     {calculateColumnSum(col)}
                                 </td>
                             ))
@@ -136,19 +209,40 @@ const ScoreTable = () => {
 
                     {/* GRAND TOTAL ROW FOR 3-FACH */}
                     {mode === '3-fach' && (
-                        <tr style={{ background: 'rgba(255,215,0,0.1)' }}>
-                            <td style={{ padding: '1rem', color: 'var(--gold)' }}>Sum</td>
+                        <tr style={{
+                            background: 'linear-gradient(90deg, rgba(255,215,0,0.08) 0%, rgba(255,215,0,0.15) 50%, rgba(255,215,0,0.08) 100%)'
+                        }}>
+                            <td style={{
+                                padding: '1.25rem 1rem',
+                                color: 'var(--gold)',
+                                fontWeight: 800,
+                                fontSize: '0.9rem',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                            }}>
+                                Gesamt
+                            </td>
                             {players.map(p => {
                                 const grandTotal = p.columns.reduce((sum, col) => sum + calculateColumnSum(col), 0);
                                 return (
-                                    <td key={`grand-${p.id}`} colSpan={3} style={{ textAlign: 'center', padding: '1rem', fontSize: '1.2rem', color: 'var(--gold)' }}>
+                                    <td
+                                        key={`grand-${p.id}`}
+                                        colSpan={3}
+                                        style={{
+                                            textAlign: 'center',
+                                            padding: '1.25rem',
+                                            fontSize: '1.5rem',
+                                            fontWeight: 800,
+                                            color: 'var(--gold)',
+                                            textShadow: '0 0 20px hsla(42, 85%, 55%, 0.4)'
+                                        }}
+                                    >
                                         {grandTotal}
                                     </td>
                                 );
                             })}
                         </tr>
                     )}
-
                 </tbody>
             </table>
 

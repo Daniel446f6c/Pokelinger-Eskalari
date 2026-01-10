@@ -15,13 +15,11 @@ interface ScoreInputModalProps {
 const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, playerName, multiplier = 1 }: ScoreInputModalProps) => {
     const [currentValue, setCurrentValue] = useState<string>('');
 
-    // Wizard State
     const [isServiert, setIsServiert] = useState(false);
     const [faceMain, setFaceMain] = useState<string>('A');
     const [faceSecondary, setFaceSecondary] = useState<string>('K');
     const [straightType, setStraightType] = useState<'small' | 'large' | null>(null);
 
-    // Derived
     const isNumberRow = ['9', '10', 'B', 'D', 'K', 'A'].includes(rowKey);
     const isSpecial = ['S', 'F', 'P', 'G'].includes(rowKey);
 
@@ -31,11 +29,10 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
             setIsServiert(false);
             setFaceMain('A');
             setFaceSecondary('K');
-            setStraightType(null); // Reset
+            setStraightType(null);
         }
     }, [isOpen, initialValue]);
 
-    // Reactive Update for Straight
     useEffect(() => {
         if (rowKey === 'S' && straightType) {
             const base = straightType === 'large' ? 25 : 20;
@@ -44,23 +41,10 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
         }
     }, [isServiert, straightType, rowKey]);
 
-    // Reactive Update for Special Wizard (F, P, G) if needed?
-    // User asked specifically for Straight independence.
-    // For F/P/G, let's also auto-update if wizard is active?
-    // Currently they have a "Berechnen" button.
-    // Let's stick to the "Berechnen" button for F/P/G to avoid accidental overwrites of manual input,
-    // but for Straight it's purely selection based usually.
-
-    // Actually, for F/P/G, if user toggles Serviert, they probably expect update too if they used wizard.
-    // But let's stick to user request: "Reihenfolge ... straße ... unabhängig".
-
     if (!isOpen) return null;
-
-    // -- Handlers --
 
     const handleManualNum = (num: number) => {
         setCurrentValue(prev => prev + num.toString());
-        // If user types manually, clear wizard state so we don't overwrite?
         setStraightType(null);
     };
 
@@ -76,23 +60,17 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
 
     const handleConfirm = () => {
         const val = currentValue === '' ? null : parseInt(currentValue, 10);
-        // Multiplier is applied to the final stored value
         const finalVal = val !== null ? val * multiplier : null;
         onConfirm(finalVal);
     };
 
-    // -- Special Logic --
-
     const handleCountInput = (count: number) => {
-        // For Rows 9-A: Input is "Count of Dice". Score = Count * FaceValue.
-        // Face Values: 9=1, 10=2, B=3, D=4, K=5, A=6.
         const faceMap: Record<string, number> = { '9': 1, '10': 2, 'B': 3, 'D': 4, 'K': 5, 'A': 6 };
         const faceVal = faceMap[rowKey] || 0;
         const score = count * faceVal;
         setCurrentValue(score.toString());
     };
 
-    // Wizard (F, P, G)
     const applyWizardScore = () => {
         const score = calculateSpecialScore(rowKey, isServiert, { main: faceMain, secondary: faceSecondary });
         setCurrentValue(score.toString());
@@ -101,130 +79,291 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
     const displayValue = currentValue === '' ? 0 : parseInt(currentValue, 10);
     const totalValue = displayValue * multiplier;
 
+    const getRowLabel = () => {
+        switch (rowKey) {
+            case 'S': return 'Straße';
+            case 'F': return 'Full House';
+            case 'P': return 'Poker';
+            case 'G': return 'Grande';
+            default: return `Reihe ${rowKey}`;
+        }
+    };
+
     return (
-        <div style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100
-        }}>
-            <div className="glass-panel" style={{ width: '95%', maxWidth: '400px', padding: '1.5rem', maxHeight: '90vh', overflowY: 'auto' }}>
-
+        <div className="modal-overlay">
+            <div className="glass-panel modal-content" style={{
+                width: '95%',
+                maxWidth: '420px',
+                padding: '1.75rem',
+                maxHeight: '90vh',
+                overflowY: 'auto'
+            }}>
                 {/* Header */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <div>
-                        <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>{playerName}</span>
-                        <h2 style={{ margin: 0, color: 'var(--gold)' }}>
-                            {isSpecial ? (rowKey === 'S' ? 'Straße' : rowKey === 'F' ? 'Full House' : rowKey === 'P' ? 'Poker' : 'Grande') : `Reihe ${rowKey}`}
-                            {multiplier > 1 && <span style={{ marginLeft: '0.5rem', color: 'var(--accent-color)', fontSize: '0.8em' }}>
-                                (x{multiplier})
-                            </span>}
-                        </h2>
-                    </div>
-                    <button onClick={onClose} style={{ padding: '0.2rem 0.6rem', background: 'transparent', border: 'none', fontSize: '1.5rem' }}>✕</button>
-                </div>
-
-                {/* Display Score */}
                 <div style={{
-                    background: 'rgba(0,0,0,0.5)', padding: '1rem', borderRadius: '8px',
-                    fontSize: '2.5rem', textAlign: 'right', marginBottom: '1.5rem',
-                    border: '1px solid var(--accent-color)', color: 'white', fontWeight: 'bold'
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '1.25rem'
                 }}>
-                    {currentValue === '' ? <span style={{ color: 'rgba(255,255,255,0.3)' }}>0</span> : (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                            <span>{totalValue}</span>
-                            {multiplier > 1 && currentValue !== '0' && (
-                                <span style={{ fontSize: '1rem', color: 'gray' }}>
-                                    {currentValue} x {multiplier}
+                    <div>
+                        <span style={{
+                            fontSize: '0.85rem',
+                            color: 'var(--text-muted)',
+                            fontWeight: 500
+                        }}>
+                            {playerName}
+                        </span>
+                        <h2 style={{
+                            margin: '0.25rem 0 0 0',
+                            fontSize: '1.5rem',
+                            fontWeight: 700,
+                            background: 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem'
+                        }}>
+                            {getRowLabel()}
+                            {multiplier > 1 && (
+                                <span style={{
+                                    fontSize: '0.9rem',
+                                    color: 'var(--accent-color)',
+                                    background: 'rgba(255,255,255,0.1)',
+                                    padding: '0.2rem 0.5rem',
+                                    borderRadius: '6px',
+                                    fontWeight: 600
+                                }}>
+                                    x{multiplier}
                                 </span>
                             )}
+                        </h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="btn-ghost"
+                        style={{
+                            padding: '0.4rem 0.8rem',
+                            fontSize: '1.2rem',
+                            lineHeight: 1
+                        }}
+                    >
+                        ✕
+                    </button>
+                </div>
+
+                {/* Score Display */}
+                <div style={{
+                    background: 'rgba(0,0,0,0.4)',
+                    padding: '1.25rem',
+                    borderRadius: 'var(--radius-sm)',
+                    marginBottom: '1.5rem',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    position: 'relative',
+                    overflow: 'hidden'
+                }}>
+                    {/* Decorative accent */}
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: '3px',
+                        background: 'linear-gradient(90deg, var(--accent-color), var(--gold))'
+                    }} />
+
+                    <div style={{
+                        fontSize: '3rem',
+                        fontWeight: 800,
+                        textAlign: 'right',
+                        color: currentValue === '' ? 'rgba(255,255,255,0.2)' : 'white'
+                    }}>
+                        {currentValue === '' ? '0' : totalValue}
+                    </div>
+                    {multiplier > 1 && currentValue !== '' && currentValue !== '0' && (
+                        <div style={{
+                            textAlign: 'right',
+                            fontSize: '0.9rem',
+                            color: 'var(--text-muted)',
+                            marginTop: '0.25rem'
+                        }}>
+                            {currentValue} × {multiplier}
                         </div>
                     )}
                 </div>
 
-                {/* --- UI FOR NUMBER ROWS (9-A) --- */}
+                {/* Number Row UI */}
                 {isNumberRow && (
                     <div style={{ marginBottom: '1.5rem' }}>
-                        <div style={{ color: 'var(--text-muted)', marginBottom: '0.5rem', fontSize: '0.9rem' }}>Anzahl der Würfel:</div>
+                        <div style={{
+                            color: 'var(--text-muted)',
+                            marginBottom: '0.75rem',
+                            fontSize: '0.85rem',
+                            fontWeight: 500
+                        }}>
+                            Anzahl der Würfel:
+                        </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                             {[1, 2, 3, 4, 5, 6].map(count => (
                                 <button
                                     key={count}
                                     onClick={() => handleCountInput(count)}
                                     style={{
-                                        padding: '1rem', fontSize: '1.2rem',
-                                        background: 'rgba(255,255,255,0.1)',
-                                        border: '1px solid rgba(255,255,255,0.2)'
+                                        padding: '1rem',
+                                        fontSize: '1.2rem',
+                                        fontWeight: 600,
+                                        background: 'rgba(255,255,255,0.08)',
+                                        border: '1px solid rgba(255,255,255,0.1)'
                                     }}
                                 >
-                                    {count}x
+                                    {count}×
                                 </button>
                             ))}
                         </div>
-                        <div style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'gray', textAlign: 'center' }}>
-                            (Berechnet automatisch Anzahl x Augenwert)
+                        <div style={{
+                            marginTop: '0.5rem',
+                            fontSize: '0.75rem',
+                            color: 'var(--text-muted)',
+                            textAlign: 'center'
+                        }}>
+                            Berechnet: Anzahl × Augenwert
                         </div>
                     </div>
                 )}
 
-                {/* --- UI FOR STRAIGHT (S) --- */}
+                {/* Straight UI */}
                 {rowKey === 'S' && (
-                    <div style={{ marginBottom: '1.5rem', background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', userSelect: 'none' }}>
-                                <input
-                                    type="checkbox"
-                                    checked={isServiert}
-                                    onChange={(e) => {
-                                        const newVal = e.target.checked;
-                                        setIsServiert(newVal);
-                                        // Auto-update if a value is already set? Better just let user click button again.
-                                    }}
-                                    style={{ width: '20px', height: '20px', accentColor: 'var(--main-primary)' }}
-                                />
-                                <span style={{ fontSize: '1.1rem' }}>Serviert (x2)</span>
-                            </label>
-                        </div>
-                        <div style={{ display: 'flex', gap: '0.8rem' }}>
-                            <button onClick={() => setStraightType('small')} style={{ flex: 1, padding: '1rem', background: straightType === 'small' ? 'var(--gold)' : 'rgba(255, 255, 255, 0.1)', color: straightType === 'small' ? 'black' : 'white' }}>
-                                Kl. Straße (20)
+                    <div style={{
+                        marginBottom: '1.5rem',
+                        background: 'rgba(255,255,255,0.03)',
+                        padding: '1rem',
+                        borderRadius: 'var(--radius-sm)',
+                        border: '1px solid rgba(255,255,255,0.05)'
+                    }}>
+                        <label style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem',
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                            marginBottom: '1rem',
+                            padding: '0.5rem',
+                            background: isServiert ? 'rgba(var(--accent-color), 0.1)' : 'transparent',
+                            borderRadius: '8px',
+                            transition: 'background 0.2s ease'
+                        }}>
+                            <input
+                                type="checkbox"
+                                checked={isServiert}
+                                onChange={(e) => setIsServiert(e.target.checked)}
+                            />
+                            <span style={{ fontSize: '1rem', fontWeight: 500 }}>
+                                Serviert <span style={{ color: 'var(--gold)' }}>(×2)</span>
+                            </span>
+                        </label>
+                        <div style={{ display: 'flex', gap: '0.75rem' }}>
+                            <button
+                                onClick={() => setStraightType('small')}
+                                style={{
+                                    flex: 1,
+                                    padding: '1rem',
+                                    fontWeight: 600,
+                                    background: straightType === 'small'
+                                        ? 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)'
+                                        : 'rgba(255, 255, 255, 0.08)',
+                                    color: straightType === 'small' ? 'black' : 'white',
+                                    border: straightType === 'small' ? 'none' : '1px solid rgba(255,255,255,0.1)'
+                                }}
+                            >
+                                Kleine (20)
                             </button>
-                            <button onClick={() => setStraightType('large')} style={{ flex: 1, padding: '1rem', background: straightType === 'large' ? 'var(--gold)' : 'rgba(255, 255, 255, 0.1)', color: straightType === 'large' ? 'black' : 'white' }}>
-                                Gr. Straße (25)
+                            <button
+                                onClick={() => setStraightType('large')}
+                                style={{
+                                    flex: 1,
+                                    padding: '1rem',
+                                    fontWeight: 600,
+                                    background: straightType === 'large'
+                                        ? 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)'
+                                        : 'rgba(255, 255, 255, 0.08)',
+                                    color: straightType === 'large' ? 'black' : 'white',
+                                    border: straightType === 'large' ? 'none' : '1px solid rgba(255,255,255,0.1)'
+                                }}
+                            >
+                                Große (25)
                             </button>
                         </div>
                     </div>
                 )}
 
-                {/* --- WIZARD FOR F, P, G --- */}
+                {/* Wizard for F, P, G */}
                 {(rowKey === 'F' || rowKey === 'P' || rowKey === 'G') && (
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '1rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
-                        <h4 style={{ marginTop: 0, marginBottom: '0.5rem', color: 'var(--accent-color)' }}>Rechner</h4>
+                    <div style={{
+                        background: 'rgba(255,255,255,0.03)',
+                        padding: '1rem',
+                        borderRadius: 'var(--radius-sm)',
+                        marginBottom: '1.5rem',
+                        border: '1px solid rgba(255,255,255,0.05)'
+                    }}>
+                        <h4 style={{
+                            marginTop: 0,
+                            marginBottom: '0.75rem',
+                            color: 'var(--accent-color)',
+                            fontSize: '0.9rem',
+                            fontWeight: 600,
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.5px'
+                        }}>
+                            Rechner
+                        </h4>
 
-                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1rem' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', userSelect: 'none' }}>
-                                <input
-                                    type="checkbox"
-                                    checked={isServiert}
-                                    onChange={(e) => setIsServiert(e.target.checked)}
-                                    style={{ width: '20px', height: '20px', accentColor: 'var(--main-primary)' }}
-                                />
-                                <span style={{ fontSize: '1.1rem' }}>Serviert (x2)</span>
-                            </label>
-                        </div>
+                        <label style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem',
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                            marginBottom: '1rem',
+                            padding: '0.5rem',
+                            background: isServiert ? 'rgba(var(--accent-color), 0.1)' : 'transparent',
+                            borderRadius: '8px'
+                        }}>
+                            <input
+                                type="checkbox"
+                                checked={isServiert}
+                                onChange={(e) => setIsServiert(e.target.checked)}
+                            />
+                            <span style={{ fontSize: '1rem', fontWeight: 500 }}>
+                                Serviert <span style={{ color: 'var(--gold)' }}>(×2)</span>
+                            </span>
+                        </label>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                <span style={{ width: '80px' }}>{rowKey === 'F' ? 'Drilling:' : rowKey === 'P' ? 'Poker:' : 'Würfel:'}</span>
-                                <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between' }}>
+                                <span style={{
+                                    width: '70px',
+                                    fontSize: '0.85rem',
+                                    color: 'var(--text-muted)',
+                                    fontWeight: 500
+                                }}>
+                                    {rowKey === 'F' ? 'Drilling:' : rowKey === 'P' ? 'Poker:' : 'Würfel:'}
+                                </span>
+                                <div style={{ display: 'flex', flex: 1, gap: '0.25rem' }}>
                                     {FACES.map(f => (
                                         <button
                                             key={f}
                                             onClick={() => setFaceMain(f)}
                                             style={{
-                                                padding: '0.4rem',
-                                                background: faceMain === f ? 'var(--gold)' : 'rgba(255,255,255,0.1)',
+                                                flex: 1,
+                                                padding: '0.5rem',
+                                                fontSize: '0.9rem',
+                                                fontWeight: 600,
+                                                background: faceMain === f
+                                                    ? 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)'
+                                                    : 'rgba(255,255,255,0.08)',
                                                 color: faceMain === f ? 'black' : 'white',
-                                                minWidth: '30px'
+                                                border: 'none'
                                             }}
                                         >
                                             {f}
@@ -234,18 +373,30 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
                             </div>
 
                             {(rowKey === 'F' || rowKey === 'P') && (
-                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginTop: '0.5rem' }}>
-                                    <span style={{ width: '80px' }}>{rowKey === 'F' ? 'Zwilling:' : 'Kicker:'}</span>
-                                    <div style={{ display: 'flex', flex: 1, justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                                    <span style={{
+                                        width: '70px',
+                                        fontSize: '0.85rem',
+                                        color: 'var(--text-muted)',
+                                        fontWeight: 500
+                                    }}>
+                                        {rowKey === 'F' ? 'Zwilling:' : 'Kicker:'}
+                                    </span>
+                                    <div style={{ display: 'flex', flex: 1, gap: '0.25rem' }}>
                                         {FACES.map(f => (
                                             <button
                                                 key={f}
                                                 onClick={() => setFaceSecondary(f)}
                                                 style={{
-                                                    padding: '0.4rem',
-                                                    background: faceSecondary === f ? 'var(--gold)' : 'rgba(255,255,255,0.1)',
+                                                    flex: 1,
+                                                    padding: '0.5rem',
+                                                    fontSize: '0.9rem',
+                                                    fontWeight: 600,
+                                                    background: faceSecondary === f
+                                                        ? 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)'
+                                                        : 'rgba(255,255,255,0.08)',
                                                     color: faceSecondary === f ? 'black' : 'white',
-                                                    minWidth: '30px'
+                                                    border: 'none'
                                                 }}
                                             >
                                                 {f}
@@ -258,32 +409,87 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
 
                         <button
                             onClick={applyWizardScore}
-                            style={{ width: '100%', marginTop: '1rem', background: 'var(--accent-color)', color: 'white' }}
+                            className="btn-accent"
+                            style={{
+                                width: '100%',
+                                marginTop: '1rem',
+                                padding: '0.8rem'
+                            }}
                         >
                             Berechnen
                         </button>
                     </div>
                 )}
 
-                {/* Manual Numpad Toggle / Fallback */}
-                <details style={{ marginBottom: '1rem', cursor: 'pointer', color: 'gray' }}>
-                    <summary>Manuelle Eingabe (Ziffernblock)</summary>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.8rem', marginTop: '1rem' }}>
+                {/* Manual Numpad */}
+                <details style={{ marginBottom: '1rem', cursor: 'pointer' }}>
+                    <summary style={{
+                        color: 'var(--text-muted)',
+                        fontSize: '0.85rem',
+                        padding: '0.5rem 0',
+                        userSelect: 'none'
+                    }}>
+                        Manuelle Eingabe (Ziffernblock)
+                    </summary>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: '0.5rem',
+                        marginTop: '0.75rem'
+                    }}>
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(n => (
-                            <button key={n} onClick={() => handleManualNum(n)} style={{ fontSize: '1.5rem', padding: '0.8rem', gridColumn: n === 0 ? 'span 2' : 'span 1' }}>{n}</button>
+                            <button
+                                key={n}
+                                onClick={() => handleManualNum(n)}
+                                style={{
+                                    fontSize: '1.4rem',
+                                    padding: '0.75rem',
+                                    gridColumn: n === 0 ? 'span 2' : 'span 1',
+                                    fontWeight: 600,
+                                    background: 'rgba(255,255,255,0.08)'
+                                }}
+                            >
+                                {n}
+                            </button>
                         ))}
-                        <button onClick={handleBackspace} style={{ fontSize: '1.2rem', background: 'rgba(255,100,100,0.2)' }}>⌫</button>
+                        <button
+                            onClick={handleBackspace}
+                            style={{
+                                fontSize: '1.2rem',
+                                background: 'rgba(255, 100, 100, 0.15)',
+                                border: '1px solid rgba(255, 100, 100, 0.3)'
+                            }}
+                        >
+                            ⌫
+                        </button>
                     </div>
                 </details>
 
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                    <button onClick={() => { setCurrentValue('0'); }} style={{ flex: 1, background: '#d32f2f' }}>
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
+                    <button
+                        onClick={() => setCurrentValue('0')}
+                        className="btn-danger"
+                        style={{ flex: 1, padding: '0.9rem' }}
+                    >
                         Strich (0)
                     </button>
-                    <button onClick={handleClear} style={{ flex: 1, background: '#555' }}>
+                    <button
+                        onClick={handleClear}
+                        className="btn-ghost"
+                        style={{ flex: 1, padding: '0.9rem' }}
+                    >
                         Clear
                     </button>
-                    <button onClick={handleConfirm} style={{ flex: 2, background: 'var(--gold)', color: 'black', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                    <button
+                        onClick={handleConfirm}
+                        className="btn-primary"
+                        style={{
+                            flex: 2,
+                            padding: '0.9rem',
+                            fontSize: '1.1rem'
+                        }}
+                    >
                         Eintragen
                     </button>
                 </div>
