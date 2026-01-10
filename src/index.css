@@ -1,0 +1,93 @@
+:root {
+  /* Premium Dark Theme Palette */
+  --hue-primary: 220; /* Deep Blue/Slate */
+  --hue-accent: 280; /* Purple/Violet */
+  --hue-gold: 45;   /* Gold */
+
+  --bg-dark: hsl(var(--hue-primary), 20%, 8%);
+  --bg-panel: hsla(var(--hue-primary), 25%, 12%, 0.8);
+  --bg-panel-glass: hsla(var(--hue-primary), 25%, 15%, 0.4);
+  
+  --text-main: hsl(var(--hue-primary), 10%, 95%);
+  --text-muted: hsl(var(--hue-primary), 10%, 60%);
+  
+  --accent-color: hsl(var(--hue-accent), 70%, 60%);
+  --accent-glow: hsla(var(--hue-accent), 70%, 60%, 0.4);
+
+  --gold: hsl(var(--hue-gold), 80%, 60%);
+
+  /* Spacing & Radius */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 10% 20%, hsla(var(--hue-accent), 50%, 20%, 0.3) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, hsla(var(--hue-gold), 50%, 20%, 0.2) 0%, transparent 40%);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+button {
+  background: var(--bg-panel);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(10px);
+}
+
+button:hover {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 15px var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.glass-panel {
+  background: var(--bg-panel-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
