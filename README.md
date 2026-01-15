@@ -1,73 +1,71 @@
-# React + TypeScript + Vite
+# 🎲 Pokelinger Eskalari
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Pokelinger Eskalari** is a premium digital scorebook for the popular dice game. It replaces traditional paper scorecards with a modern, interactive, and visually stunning web application.
 
-Currently, two official plugins are available:
+![UI Preview Placeholder](preview-image.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **🏆 Professional Scoring System**: Complete implementation of Eskalero rules including numbers (9-A), Specials (Straße, Full House, Poker, Grande), and the "Serviert" bonus.
+- **⚡ Dual Game Modes**:
+  - **Klassisch**: The standard 1-column experience.
+  - **3-Fach**: The advanced challenge with 3 columns and automatic multipliers (x1, x2, x3).
+- **🎨 Premium UX/UI**:
+  - **Dark Mode**: Sleek glassmorphism design that's easy on the eyes.
+  - **Micro-animations**: Smooth transitions, hover effects, and feedback animations.
+  - **Responsive Design**: Play on your phone, tablet, or desktop with equal comfort.
+- **🧙 Scoring Wizard**: Intelligent modals for score entry, including count-based input for numbers and specialized selection for straights and poker.
+- **🔄 Turn Management**: Automatic turn tracking ensures every player stays in sync.
+- **🥇 Victory Screen**: Victory screen with winner score and celebration.
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Core**: [React 19](https://react.dev/)
+- **Logic**: [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: Vanilla CSS (Custom Variable Design System)
+- **State**: React Context API
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/pokelinger-eskalari.git
+   cd pokelinger-eskalari
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Build for production:
+   ```bash
+   npm run build
+   ```
+
+## 📂 Project Structure
+
+- `src/components`: UI components (Setup, Game Board, Modals, Victory).
+- `src/context`: Global game state management.
+- `src/types`: TypeScript definitions for game logic.
+- `src/utils`: Helper functions for score calculations.
+- `src/index.css`: The "Premium Design System" and core styles.
+
+---
+
+*Made with ❤️ for dice enthusiasts everywhere.*
