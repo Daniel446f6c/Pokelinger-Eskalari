@@ -35,7 +35,7 @@ const SetupScreen = () => {
     return (
         <div className="glass-panel" style={{
             maxWidth: '500px',
-            margin: '3rem auto',
+            margin: '2rem auto',
             padding: '2.5rem',
             position: 'relative'
         }}>
@@ -51,6 +51,19 @@ const SetupScreen = () => {
                 pointerEvents: 'none',
                 zIndex: -1
             }} />
+
+            {/* Logo */}
+            <img
+                src="/logo.svg"
+                alt="Pokelinger Logo"
+                style={{
+                    width: '100px',
+                    height: '100px',
+                    marginBottom: '0.6rem',
+                    filter: 'drop-shadow(0 0 20px hsla(270, 75%, 60%, 0.3))',
+                    animation: 'scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)'
+                }}
+            />
 
             {/* Title */}
             <h1 style={{

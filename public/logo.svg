@@ -1,0 +1,42 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="icon_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9d50bb" />
+      <stop offset="100%" stop-color="#ffb75e" />
+    </linearGradient>
+    <filter id="neon_glow" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    <clipPath id="clip_squircle">
+        <path d="M128 0C57.3075 0 0 57.3075 0 128V384C0 454.693 57.3075 512 128 512H384C454.693 512 512 454.693 512 384V128C512 57.3075 454.693 0 384 0H128Z" />
+    </clipPath>
+  </defs>
+
+  <!-- Background squircle with inner depth -->
+  <rect width="512" height="512" rx="128" fill="#0f111a" />
+  <rect width="512" height="512" rx="128" fill="url(#icon_grad)" fill-opacity="0.05" />
+  
+  <!-- Stylized Perspective Die -->
+  <g filter="url(#neon_glow)">
+    <!-- Main Body -->
+    <path d="M256 120L400 200V340L256 420L112 340V200L256 120Z" stroke="url(#icon_grad)" stroke-width="20" stroke-linejoin="round" />
+    
+    <!-- Face Separators -->
+    <path d="M256 120V260M256 260L400 200M256 260L112 200" stroke="url(#icon_grad)" stroke-width="12" stroke-linecap="round" />
+    
+    <!-- Dots (Stylized as Circles/Points of Light) -->
+    <!-- Top Face (Poker style/Center dot) -->
+    <circle cx="256" cy="190" r="12" fill="url(#icon_grad)" />
+    
+    <!-- Right Face (Two dots) -->
+    <circle cx="310" cy="270" r="10" fill="url(#icon_grad)" />
+    <circle cx="346" cy="290" r="10" fill="url(#icon_grad)" />
+    
+    <!-- Left Face (Three dots) -->
+    <circle cx="200" cy="240" r="10" fill="url(#icon_grad)" />
+    <circle cx="160" cy="270" r="10" fill="url(#icon_grad)" />
+    <circle cx="120" cy="300" r="10" fill="url(#icon_grad)" />
+  </g>
+
+</svg>
