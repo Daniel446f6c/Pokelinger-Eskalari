@@ -1,4 +1,5 @@
 # 🎲 Pokelinger Eskalari
+[![Vite deploy to Pages](https://github.com/Daniel446f6c/Pokelinger-Eskalari/actions/workflows/vite-deploy.yml/badge.svg)](https://github.com/Daniel446f6c/Pokelinger-Eskalari/actions/workflows/vite-deploy.yml)
 
 **Pokelinger Eskalari** is a premium digital scorebook for the popular dice game. It replaces traditional paper scorecards with a modern, interactive, and visually stunning web application.
 
