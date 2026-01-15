@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Vite deploy to Pages
 
 on:
   # Runs on pushes and pull requests targeting the default branch
