@@ -21,7 +21,6 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
     const [straightType, setStraightType] = useState<'small' | 'large' | null>(null);
 
     const isNumberRow = ['9', '10', 'B', 'D', 'K', 'A'].includes(rowKey);
-    const isSpecial = ['S', 'F', 'P', 'G'].includes(rowKey);
 
     useEffect(() => {
         if (isOpen) {
