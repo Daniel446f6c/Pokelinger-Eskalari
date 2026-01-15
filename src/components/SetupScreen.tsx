@@ -54,7 +54,7 @@ const SetupScreen = () => {
 
             {/* Logo */}
             <img
-                src="/logo.svg"
+                src={`${import.meta.env.BASE_URL}logo.svg`}
                 alt="Pokelinger Logo"
                 style={{
                     width: '100px',
