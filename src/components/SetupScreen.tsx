@@ -42,11 +42,11 @@ const SetupScreen = () => {
             {/* Decorative glow */}
             <div style={{
                 position: 'absolute',
-                top: '-50%',
+                top: '0%',
                 left: '50%',
                 transform: 'translateX(-50%)',
                 width: '200%',
-                height: '200%',
+                height: '100%',
                 background: 'radial-gradient(ellipse at center, hsla(270, 70%, 50%, 0.1) 0%, transparent 60%)',
                 pointerEvents: 'none',
                 zIndex: -1

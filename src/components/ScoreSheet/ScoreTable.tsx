@@ -35,7 +35,7 @@ const ScoreTable = () => {
 
     return (
         <div className="glass-panel" style={{ overflowX: 'auto', padding: '1.25rem', margin: '1rem 0' }}>
-            <table className="score-table" style={{ minWidth: '600px' }}>
+            <table className="score-table" style={{ minWidth: '600px', tableLayout: 'fixed', width: '100%' }}>
                 <thead>
                     <tr>
                         <th style={{
@@ -153,6 +153,12 @@ const ScoreTable = () => {
                                                 style={{
                                                     width: '100%',
                                                     minHeight: '42px',
+                                                    minWidth: '3.5rem',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    padding: '0.2rem',
+                                                    textAlign: 'center',
                                                     background: val !== null
                                                         ? 'rgba(255,255,255,0.08)'
                                                         : isClickable
