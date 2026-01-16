@@ -57,8 +57,9 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
         setStraightType(null);
     };
 
-    const handleConfirm = () => {
-        const val = currentValue === '' ? null : parseInt(currentValue, 10);
+    const handleConfirm = (passedValue?: string) => {
+        const sourceValue = passedValue !== undefined ? passedValue : currentValue;
+        const val = sourceValue === '' ? null : parseInt(sourceValue, 10);
         const finalVal = val !== null ? val * multiplier : null;
         onConfirm(finalVal);
     };
@@ -80,11 +81,16 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
 
     const getRowLabel = () => {
         switch (rowKey) {
+            case '9': return 'Neuner';
+            case '10': return 'Zehner';
+            case 'B': return 'Bube';
+            case 'D': return 'Dame';
+            case 'K': return 'König';
+            case 'A': return 'Ass';
             case 'S': return 'Straße';
             case 'F': return 'Full House';
             case 'P': return 'Poker';
             case 'G': return 'Grande';
-            default: return `Reihe ${rowKey}`;
         }
     };
 
@@ -204,7 +210,7 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
                             Anzahl der Würfel:
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
-                            {[1, 2, 3, 4, 5, 6].map(count => (
+                            {[1, 2, 3, 4, 5].map(count => (
                                 <button
                                     key={count}
                                     onClick={() => handleCountInput(count)}
@@ -467,21 +473,21 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
                 {/* Action Buttons */}
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
                     <button
-                        onClick={() => setCurrentValue('0')}
+                        onClick={() => { setCurrentValue('0'); handleConfirm('0') }}
                         className="btn-danger"
                         style={{ flex: 1, padding: '0.9rem' }}
                     >
                         Strich (0)
                     </button>
                     <button
-                        onClick={handleClear}
+                        onClick={() => handleClear()}
                         className="btn-ghost"
                         style={{ flex: 1, padding: '0.9rem' }}
                     >
                         Clear
                     </button>
                     <button
-                        onClick={handleConfirm}
+                        onClick={() => handleConfirm()}
                         className="btn-primary"
                         style={{
                             flex: 2,
