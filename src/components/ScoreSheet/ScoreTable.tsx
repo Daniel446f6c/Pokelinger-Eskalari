@@ -35,12 +35,12 @@ const ScoreTable = () => {
 
     return (
         <div className="glass-panel" style={{ overflowX: 'auto', padding: '1.25rem', margin: '1rem 0' }}>
-            <table className="score-table" style={{ minWidth: '600px', tableLayout: 'fixed', width: '100%' }}>
+            <table className="score-table" style={{ minWidth: '760px', tableLayout: 'fixed', width: '100%' }}>
                 <thead>
                     <tr>
                         <th style={{
-                            textAlign: 'left',
-                            padding: '1rem',
+                            textAlign: 'center',
+                            padding: '0.5rem',
                             color: 'var(--text-muted)',
                             fontSize: '0.8rem'
                         }}>
@@ -153,7 +153,6 @@ const ScoreTable = () => {
                                                 style={{
                                                     width: '100%',
                                                     minHeight: '42px',
-                                                    minWidth: '3.5rem',
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
