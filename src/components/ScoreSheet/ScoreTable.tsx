@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useGame } from '../../context/GameContext';
 import { ROW_KEYS, type RowKey } from '../../types/game';
 import ScoreInputModal from '../Input/ScoreInputModal';
+import confetti from 'canvas-confetti';
 
 const ScoreTable = () => {
     const { players, mode, updateScore, currentPlayerId } = useGame();
@@ -24,10 +25,45 @@ const ScoreTable = () => {
         setEditingCell({ playerId, colIndex, rowKey, currentVal: val, playerName });
     };
 
+    const triggerGrandeConfetti = () => {
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+        const interval: any = setInterval(function () {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+
+            // Konfetti von links und rechts schießen
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                colors: ['#FFD700', '#8A2BE2', '#FFFFFF'] // Gold, Violett, Weiß
+            });
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                colors: ['#FFD700', '#8A2BE2', '#FFFFFF']
+            });
+        }, 250);
+    };
+
     const handleInputConfirm = (val: number | null) => {
         if (editingCell) {
             if (val !== null) {
                 updateScore(editingCell.playerId, editingCell.colIndex, editingCell.rowKey, val);
+                if (editingCell.rowKey === 'G' && val > 0) {
+                    triggerGrandeConfetti();
+                }
             }
             setEditingCell(null);
         }
@@ -40,11 +76,10 @@ const ScoreTable = () => {
                     <tr>
                         <th style={{
                             textAlign: 'center',
-                            padding: '0.5rem',
-                            color: 'var(--text-muted)',
-                            fontSize: '0.8rem'
+                            padding: '0.1rem',
+                            fontSize: '1.4rem'
                         }}>
-                            Feld
+                            🎲
                         </th>
                         {players.map(p => {
                             const isActive = p.id === currentPlayerId;
@@ -119,6 +154,9 @@ const ScoreTable = () => {
                             background: rowIdx % 2 === 0 ? 'rgba(255,255,255,0.015)' : 'transparent'
                         }}>
                             <td style={{
+                                position: 'sticky',
+                                left: 0,
+                                zIndex: 5,
                                 padding: '0.75rem 1rem',
                                 fontWeight: 700,
                                 color: ['S', 'F', 'P', 'G'].includes(key) ? 'var(--gold)' : 'var(--accent-color)',
@@ -174,7 +212,17 @@ const ScoreTable = () => {
                                                     transition: 'all 0.2s ease'
                                                 }}
                                             >
-                                                {val !== null ? val : '–'}
+                                                {val !== null ? (
+                                                    <span
+                                                        key={val}
+                                                        className="animate-score"
+                                                        style={{ display: 'inline-block' }}
+                                                    >
+                                                        {val}
+                                                    </span>
+                                                ) : (
+                                                    <span style={{ opacity: 0.3 }}>–</span>
+                                                )}
                                             </button>
                                         </td>
                                     );
@@ -206,7 +254,9 @@ const ScoreTable = () => {
                                     color: 'var(--gold)',
                                     fontSize: '1.1rem'
                                 }}>
-                                    {calculateColumnSum(col)}
+                                    <span key={calculateColumnSum(col)} className="animate-score" style={{ display: 'inline-block' }}>
+                                        {calculateColumnSum(col)}
+                                    </span>
                                 </td>
                             ))
                         ))}
@@ -242,7 +292,9 @@ const ScoreTable = () => {
                                             textShadow: '0 0 20px hsla(42, 85%, 55%, 0.4)'
                                         }}
                                     >
-                                        {grandTotal}
+                                        <span key={grandTotal} className="animate-score" style={{ display: 'inline-block' }}>
+                                            {grandTotal}
+                                        </span>
                                     </td>
                                 );
                             })}
