@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { RowKey } from '../../types/game';
 import { calculateSpecialScore, FACES } from '../../utils/scoreCalculator';
 
@@ -29,8 +30,16 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
             setFaceMain('A');
             setFaceSecondary('K');
             setStraightType(null);
+            document.body.style.overflow = 'hidden'; // scroll lock
         }
-    }, [isOpen, initialValue]);
+        else {
+            document.body.style.overflow = 'unset';
+        }
+
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
 
     useEffect(() => {
         if (rowKey === 'S' && straightType) {
@@ -94,7 +103,7 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
         }
     };
 
-    return (
+    return createPortal(
         <div className="modal-overlay">
             <div className="glass-panel modal-content" style={{
                 width: '95%',
@@ -499,7 +508,8 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
                     </button>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 };
 
