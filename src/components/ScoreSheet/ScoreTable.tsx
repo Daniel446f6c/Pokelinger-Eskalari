@@ -11,7 +11,6 @@ const ScoreTable = () => {
         playerId: string,
         colIndex: number,
         rowKey: RowKey,
-        currentVal: number | null,
         playerName: string
     } | null>(null);
 
@@ -22,7 +21,7 @@ const ScoreTable = () => {
     const handleCellClick = (playerId: string, colIndex: number, rowKey: RowKey, val: number | null, playerName: string) => {
         if (playerId !== currentPlayerId) return;
         if (val !== null) return;
-        setEditingCell({ playerId, colIndex, rowKey, currentVal: val, playerName });
+        setEditingCell({ playerId, colIndex, rowKey, playerName });
     };
 
     const triggerGrandeConfetti = () => {
@@ -309,7 +308,6 @@ const ScoreTable = () => {
                     onClose={() => setEditingCell(null)}
                     onConfirm={handleInputConfirm}
                     rowKey={editingCell.rowKey}
-                    initialValue={editingCell.currentVal}
                     playerName={editingCell.playerName}
                     multiplier={mode === '3-fach' ? editingCell.colIndex + 1 : 1}
                 />

@@ -8,14 +8,12 @@ interface ScoreInputModalProps {
     onClose: () => void;
     onConfirm: (value: number | null) => void;
     rowKey: RowKey;
-    initialValue: number | null;
     playerName: string;
     multiplier?: number;
 }
 
-const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, playerName, multiplier = 1 }: ScoreInputModalProps) => {
+const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, playerName, multiplier = 1 }: ScoreInputModalProps) => {
     const [currentValue, setCurrentValue] = useState<string>('');
-
     const [isServiert, setIsServiert] = useState(false);
     const [faceMain, setFaceMain] = useState<string>('A');
     const [faceSecondary, setFaceSecondary] = useState<string>('K');
@@ -25,7 +23,7 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
 
     useEffect(() => {
         if (isOpen) {
-            setCurrentValue(initialValue !== null ? initialValue.toString() : '');
+            setCurrentValue('');
             setIsServiert(false);
             setFaceMain('A');
             setFaceSecondary('K');
@@ -498,10 +496,13 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, initialValue, pla
                     <button
                         onClick={() => handleConfirm()}
                         className="btn-primary"
+                        disabled={currentValue === ''}
                         style={{
                             flex: 2,
                             padding: '0.9rem',
-                            fontSize: '1.1rem'
+                            fontSize: '1.1rem',
+                            opacity: currentValue === '' ? 0.5 : 1,
+                            cursor: currentValue === '' ? 'not-allowed' : 'pointer'
                         }}
                     >
                         Eintragen
