@@ -31,4 +31,5 @@ export interface GameContextType extends GameState {
   currentPlayerId: string | null;
   isGameComplete: boolean;
   getWinner: () => { player: Player; total: number } | null;
+  calculatePlayerTotal: (player: Player) => number;
 }

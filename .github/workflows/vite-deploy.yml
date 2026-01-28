@@ -2,7 +2,7 @@
 name: Vite deploy to Pages
 
 on:
-  # Runs on pushes and pull requests targeting the default branch
+  # Runs on push/merge targeting the default branch
   push:
     branches: ["master"]
 
