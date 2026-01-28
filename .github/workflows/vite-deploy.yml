@@ -2,8 +2,8 @@
 name: Vite deploy to Pages
 
 on:
-  # Runs on pushes and pull requests targeting the default branch
-  push:
+  # Runs on pull requests targeting the default branch
+  pull_request:
     branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
