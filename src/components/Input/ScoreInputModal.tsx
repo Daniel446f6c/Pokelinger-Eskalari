@@ -49,16 +49,6 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, playerName, multi
 
     if (!isOpen) return null;
 
-    const handleManualNum = (num: number) => {
-        setCurrentValue(prev => prev + num.toString());
-        setStraightType(null);
-    };
-
-    const handleBackspace = () => {
-        setCurrentValue(prev => prev.slice(0, -1));
-        setStraightType(null);
-    };
-
     const handleClear = () => {
         setCurrentValue('');
         setStraightType(null);
@@ -432,50 +422,6 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, playerName, multi
                         </button>
                     </div>
                 )}
-
-                {/* Manual Numpad */}
-                <details style={{ marginBottom: '1rem', cursor: 'pointer' }}>
-                    <summary style={{
-                        color: 'var(--text-muted)',
-                        fontSize: '0.85rem',
-                        padding: '0.5rem 0',
-                        userSelect: 'none'
-                    }}>
-                        Manuelle Eingabe (Ziffernblock)
-                    </summary>
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
-                        gap: '0.5rem',
-                        marginTop: '0.75rem'
-                    }}>
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].map(n => (
-                            <button
-                                key={n}
-                                onClick={() => handleManualNum(n)}
-                                style={{
-                                    fontSize: '1.4rem',
-                                    padding: '0.75rem',
-                                    gridColumn: n === 0 ? 'span 2' : 'span 1',
-                                    fontWeight: 600,
-                                    background: 'rgba(255,255,255,0.08)'
-                                }}
-                            >
-                                {n}
-                            </button>
-                        ))}
-                        <button
-                            onClick={handleBackspace}
-                            style={{
-                                fontSize: '1.2rem',
-                                background: 'rgba(255, 100, 100, 0.15)',
-                                border: '1px solid rgba(255, 100, 100, 0.3)'
-                            }}
-                        >
-                            ⌫
-                        </button>
-                    </div>
-                </details>
 
                 {/* Action Buttons */}
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
