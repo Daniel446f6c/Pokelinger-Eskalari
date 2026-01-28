@@ -23,6 +23,7 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, playerName, multi
 
     useEffect(() => {
         if (isOpen) {
+            (document.activeElement as HTMLElement)?.blur(); // Force the background element to lose focus immediately
             setCurrentValue('');
             setIsServiert(false);
             setFaceMain('A');
@@ -38,6 +39,22 @@ const ScoreInputModal = ({ isOpen, onClose, onConfirm, rowKey, playerName, multi
             document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        if (isOpen) {
+            window.addEventListener('keydown', handleKeyDown);
+        }
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isOpen, onClose]);
 
     useEffect(() => {
         if (rowKey === 'S' && straightType) {
