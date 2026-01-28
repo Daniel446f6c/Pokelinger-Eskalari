@@ -113,7 +113,8 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
             updateScore,
             resetGame,
             isGameComplete,
-            getWinner
+            getWinner,
+            calculatePlayerTotal
         }}>
             {children}
         </GameContext.Provider>

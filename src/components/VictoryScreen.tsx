@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useMemo } from 'react';
 import { useGame } from '../context/GameContext';
+import type { Player } from '../types/game';
 
 interface Particle {
     x: number;
@@ -13,9 +14,17 @@ interface Particle {
 }
 
 const VictoryScreen = () => {
-    const { getWinner, resetGame } = useGame();
+    const { players, calculatePlayerTotal, resetGame } = useGame();
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const winner = getWinner();
+
+    // Sort players by score
+    const rankedPlayers = useMemo(() => {
+        return [...players].sort((a, b) => calculatePlayerTotal(b) - calculatePlayerTotal(a));
+    }, [players, calculatePlayerTotal]);
+    const winner = rankedPlayers[0];
+    const second = rankedPlayers[1];
+    const third = rankedPlayers[2];
+    const rest = rankedPlayers.slice(3);
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -115,24 +124,99 @@ const VictoryScreen = () => {
         };
     }, []);
 
+    // Podium item component
+    const PodiumPlace = ({ player, place, color, height }: { player: Player, place: number, color: string, height: string }) => (
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            zIndex: 5,
+            transform: place === 1 ? 'scale(1.1)' : 'scale(1)'
+        }}>
+            <div style={{
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+                color: 'white',
+                marginBottom: '0.5rem',
+                textShadow: `0 0 10px ${color}`
+            }}>
+                {player.name}
+            </div>
+            <div style={{
+                width: '100px',
+                height: height,
+                background: `linear-gradient(to bottom, ${color}cc, ${color}44)`,
+                borderTop: `4px solid ${color}`,
+                display: 'flex',
+                alignItems: 'flex-start',
+                justifyContent: 'center',
+                paddingTop: '1rem',
+                fontSize: '2rem',
+                fontWeight: 'bold',
+                color: 'white',
+                boxShadow: `0 0 16px ${color}66`,
+                borderRadius: '8px 8px 0 0'
+            }}>
+                {place}
+            </div>
+            <div style={{
+                marginTop: '0.5rem',
+                fontSize: '1.2rem',
+                fontWeight: 'bold',
+                color: color
+            }}>
+                {calculatePlayerTotal(player)} Pkt
+            </div>
+        </div>
+    );
+
     return (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', overflowY: 'auto' }}>
             {/* Fireworks Canvas */}
             <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, background: 'rgba(0, 0, 0, 0.85)' }} />
-            {/* Victory Content */}
-            <div className="glass-panel" style={{ position: 'relative', zIndex: 1, padding: '3rem', textAlign: 'center', maxWidth: '500px', animation: 'scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
+
+            <div className="glass-panel" style={{ position: 'relative', zIndex: 1, padding: '1rem', textAlign: 'center', width: '90%', maxWidth: '600px', animation: 'scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }}>
                 {/* Trophy Icon */}
-                <div style={{ fontSize: '5rem', marginBottom: '1rem', filter: 'drop-shadow(0 0 20px hsla(42, 85%, 55%, 0.6))' }}>🏆</div>
-                {/* Winner Announcement */}
-                <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Gewinner</h1>
-                <div style={{ fontSize: '3rem', fontWeight: 800, marginBottom: '1rem', background: 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', textShadow: '0 0 40px hsla(42, 85%, 55%, 0.3)' }}>
-                    {winner?.player.name || 'Unbekannt'}
+                <div style={{ fontSize: '4rem', marginBottom: '1rem', filter: 'drop-shadow(0 0 20px hsla(42, 85%, 55%, 0.6))' }}>🏆</div>
+
+                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '2rem', background: 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                    Siegerehrung
+                </h1>
+
+                {/* Podium */}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: '1rem', marginBottom: '3rem' }}>
+                    {second && <PodiumPlace player={second} place={2} color="#C0C0C0" height="125px" />}
+                    {winner && <PodiumPlace player={winner} place={1} color="#FFD700" height="220px" />}
+                    {third && <PodiumPlace player={third} place={3} color="#CD7F32" height="90px" />}
                 </div>
-                <div style={{ fontSize: '1.5rem', color: 'var(--text-muted)', marginBottom: '2rem' }}>
-                    mit <span style={{ color: 'var(--gold)', fontWeight: 700, fontSize: '1.8rem' }}>{winner?.total || 0}</span> Punkten
-                </div>
+
+                {/* Others List */}
+                {rest.length > 0 && (
+                    <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem', width: '100%' }}>
+                        <h3 style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>Weitere Platzierungen</h3>
+                        <div style={{ display: 'grid', gap: '0.5rem' }}>
+                            {rest.map((player, index) => (
+                                <div key={player.id} style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    padding: '0.8rem 1.5rem',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    borderRadius: '8px'
+                                }}>
+                                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                        <span style={{ color: 'var(--text-muted)', width: '20px' }}>{index + 4}.</span>
+                                        <span style={{ fontWeight: 'bold' }}>{player.name}</span>
+                                    </div>
+                                    <span style={{ color: 'var(--gold)', fontWeight: 'bold' }}>{calculatePlayerTotal(player)} Pkt</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* New Game Button */}
-                <button onClick={resetGame} className="btn-primary pulse" style={{ padding: '1rem 3rem', fontSize: '1.2rem', borderRadius: 'var(--radius-md)' }}>
+                <button onClick={resetGame} className="btn-primary pulse" style={{ marginTop: '2rem', padding: '1rem 3rem', fontSize: '1.2rem', borderRadius: 'var(--radius-md)' }}>
                     🎲 Neues Spiel
                 </button>
             </div>
