@@ -31,7 +31,7 @@ const ScoreTable = () => {
 
         const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
 
-        const interval: any = setInterval(function () {
+        const interval: any = setInterval(() => {
             const timeLeft = animationEnd - Date.now();
 
             if (timeLeft <= 0) {
@@ -40,12 +40,11 @@ const ScoreTable = () => {
 
             const particleCount = 50 * (timeLeft / duration);
 
-            // Konfetti von links und rechts schießen
             confetti({
                 ...defaults,
                 particleCount,
                 origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-                colors: ['#FFD700', '#8A2BE2', '#FFFFFF'] // Gold, Violett, Weiß
+                colors: ['#FFD700', '#8A2BE2', '#FFFFFF']
             });
             confetti({
                 ...defaults,
