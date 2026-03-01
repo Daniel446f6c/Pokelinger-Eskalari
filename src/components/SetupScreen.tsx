@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useGame } from '../context/GameContext';
 import type { GameMode } from '../types/game';
+import LeaderboardModal from './Leaderboard/LeaderboardModal';
 
 const SetupScreen = () => {
     const { startGame } = useGame();
     const [numPlayers, setNumPlayers] = useState(2);
     const [names, setNames] = useState<string[]>(['Spieler 1', 'Spieler 2']);
     const [mode, setMode] = useState<GameMode>('3-fach');
+    const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
     useEffect(() => {
         setNames(prev => {
@@ -204,20 +206,48 @@ const SetupScreen = () => {
                 </div>
             </div>
 
-            {/* Start Button */}
-            <button
-                onClick={handleStart}
-                className="btn-primary pulse"
-                style={{
-                    width: '100%',
-                    padding: '1.1rem',
-                    fontSize: '1.25rem',
-                    borderRadius: 'var(--radius-md)',
-                    letterSpacing: '0.02em'
-                }}
-            >
-                🎲 Spiel Starten
-            </button>
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                    onClick={handleStart}
+                    className="btn-primary pulse"
+                    style={{
+                        flex: 2,
+                        padding: '1.1rem',
+                        fontSize: '1.25rem',
+                        borderRadius: 'var(--radius-md)',
+                        letterSpacing: '0.02em'
+                    }}
+                >
+                    🎲 Spiel Starten
+                </button>
+                <button
+                    onClick={() => setIsLeaderboardOpen(true)}
+                    className="btn-ghost"
+                    style={{
+                        flex: 1,
+                        padding: '1.1rem',
+                        fontSize: '1.1rem',
+                        borderRadius: 'var(--radius-md)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        background: 'rgba(255, 215, 0, 0.05)',
+                        border: '1px solid rgba(255,215,0,0.2)',
+                        color: 'var(--gold)',
+                        fontWeight: 600,
+                        transition: 'all 0.2s ease'
+                    }}
+                >
+                    🏆 Top 50
+                </button>
+            </div>
+
+            <LeaderboardModal
+                isOpen={isLeaderboardOpen}
+                onClose={() => setIsLeaderboardOpen(false)}
+            />
         </div>
     );
 };
