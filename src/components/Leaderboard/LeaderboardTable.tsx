@@ -67,11 +67,13 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, loading })
                         // Special styles for top 3
                         if (rank === 1) {
                             rankStyle = { color: '#FFD700', fontWeight: 800, fontSize: '1.2rem', textShadow: '0 0 10px rgba(255, 215, 0, 0.5)' };
-                            rankIcon = '👑';
+                            rankIcon = '🥇';
                         } else if (rank === 2) {
-                            rankStyle = { color: '#C0C0C0', fontWeight: 700 };
+                            rankStyle = { color: '#C0C0C0', fontWeight: 700, fontSize: '1.2rem', textShadow: '0 0 10px rgba(192, 192, 192, 0.5)' };
+                            rankIcon = '🥈';
                         } else if (rank === 3) {
-                            rankStyle = { color: '#CD7F32', fontWeight: 700 };
+                            rankStyle = { color: '#CD7F32', fontWeight: 700, fontSize: '1.2rem', textShadow: '0 0 10px rgba(205, 127, 50, 0.5)' };
+                            rankIcon = '🥉';
                         }
 
                         return (
