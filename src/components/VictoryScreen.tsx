@@ -1,6 +1,7 @@
 import { useEffect, useRef, useMemo } from 'react';
 import { useGame } from '../context/GameContext';
 import type { Player } from '../types/game';
+import { useLeaderboard } from '../hooks/useLeaderboard';
 
 interface Particle {
     x: number;
@@ -14,8 +15,10 @@ interface Particle {
 }
 
 const VictoryScreen = () => {
-    const { players, calculatePlayerTotal, resetGame } = useGame();
+    const { players, calculatePlayerTotal, resetGame, mode } = useGame();
+    const { submitScore } = useLeaderboard();
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const hasSubmitted = useRef(false);
 
     // Sort players by score
     const rankedPlayers = useMemo(() => {
@@ -25,6 +28,14 @@ const VictoryScreen = () => {
     const second = rankedPlayers[1];
     const third = rankedPlayers[2];
     const rest = rankedPlayers.slice(3);
+
+    useEffect(() => {
+        // Automatically submit the winner's score exactly once
+        if (!hasSubmitted.current && winner) {
+            hasSubmitted.current = true;
+            submitScore(winner.name, calculatePlayerTotal(winner), mode);
+        }
+    }, [winner, calculatePlayerTotal, mode, submitScore]);
 
     useEffect(() => {
         const canvas = canvasRef.current;
