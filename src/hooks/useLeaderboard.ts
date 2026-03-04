@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ref, onValue, push, query, orderByChild, limitToLast } from 'firebase/database';
-import { db } from '../utils/firebase';
+import { db, ensureAppCheck } from '../utils/firebase';
 import type { GameMode } from '../types/game';
 
 export interface LeaderboardEntry {
@@ -19,55 +19,62 @@ export const useLeaderboard = () => {
     const loading = loadingClassic || loading3Fach;
 
     useEffect(() => {
-        // Query for classic mode, ordered by score, limit to top 50
-        const classicRef = query(ref(db, 'leaderboard/classic'), orderByChild('score'), limitToLast(50));
-        const classicUnsubscribe = onValue(classicRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const entries = Object.entries(data).map(([key, value]: [string, any]) => ({
-                    id: key,
-                    ...value
-                }));
-                // Realtime DB order is ascending when using limitToLast with positive numbers, 
-                // so highest score is at the end. We reverse to show highest score first.
-                setScoresClassic(entries.sort((a, b) => b.score - a.score));
-            } else {
-                setScoresClassic([]);
-            }
-            setLoadingClassic(false);
-        }, (error: Error) => {
-            console.error("Firebase read error (classic):", error.message);
-            setScoresClassic([]);
-            setLoadingClassic(false);
-        });
+        let classicUnsubscribe: (() => void) | undefined;
+        let fach3Unsubscribe: (() => void) | undefined;
 
-        // Query for 3-fach mode, ordered by score, limit to top 50
-        const fach3Ref = query(ref(db, 'leaderboard/3-fach'), orderByChild('score'), limitToLast(50));
-        const fach3Unsubscribe = onValue(fach3Ref, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const entries = Object.entries(data).map(([key, value]: [string, any]) => ({
-                    id: key,
-                    ...value
-                }));
-                setScores3Fach(entries.sort((a, b) => b.score - a.score));
-            } else {
-                setScores3Fach([]);
+        const setupListeners = async () => {
+            try {
+                await ensureAppCheck();
+
+                // Query for classic mode, ordered by score, limit to top 50
+                const classicRef = query(ref(db, 'leaderboard/classic'), orderByChild('score'), limitToLast(50));
+                classicUnsubscribe = onValue(classicRef, (snapshot) => {
+                    const data = snapshot.val();
+                    const entries = data ? Object.entries(data).map(([key, value]: [string, any]) => ({
+                        id: key,
+                        ...value
+                    })) : [];
+                    // Realtime DB order is ascending when using limitToLast with positive numbers, 
+                    // so highest score is at the end. We reverse to show highest score first.
+                    setScoresClassic(entries.sort((a, b) => b.score - a.score));
+                    setLoadingClassic(false);
+                }, (error) => {
+                    console.error("Firebase read error (classic):", error.message);
+                    setLoadingClassic(false);
+                });
+
+                // Query for 3-fach mode, ordered by score, limit to top 50
+                const fach3Ref = query(ref(db, 'leaderboard/3-fach'), orderByChild('score'), limitToLast(50));
+                fach3Unsubscribe = onValue(fach3Ref, (snapshot) => {
+                    const data = snapshot.val();
+                    const entries = data ? Object.entries(data).map(([key, value]: [string, any]) => ({
+                        id: key,
+                        ...value
+                    })) : [];
+                    setScores3Fach(entries.sort((a, b) => b.score - a.score));
+                    setLoading3Fach(false);
+                }, (error) => {
+                    console.error("Firebase read error (3-fach):", error.message);
+                    setLoading3Fach(false);
+                });
+
+            } catch (error) {
+                console.error("App Check initialization failed:", error);
+                setLoadingClassic(false);
+                setLoading3Fach(false);
             }
-            setLoading3Fach(false);
-        }, (error: Error) => {
-            console.error("Firebase read error (3-fach):", error.message);
-            setScores3Fach([]);
-            setLoading3Fach(false);
-        });
+        };
+
+        setupListeners();
 
         return () => {
-            classicUnsubscribe();
-            fach3Unsubscribe();
+            if (classicUnsubscribe) classicUnsubscribe();
+            if (fach3Unsubscribe) fach3Unsubscribe();
         };
     }, []);
 
     const submitScore = async (username: string, score: number, mode: GameMode) => {
+        await ensureAppCheck();
         const path = mode === 'classic' ? 'leaderboard/classic' : 'leaderboard/3-fach';
         const newScoreRef = ref(db, path);
         try {
