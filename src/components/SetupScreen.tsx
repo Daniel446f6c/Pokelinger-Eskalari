@@ -210,9 +210,9 @@ const SetupScreen = () => {
             <div style={{ display: 'flex', gap: '0.75rem' }}>
                 <button
                     onClick={handleStart}
-                    className="btn-primary pulse"
+                    className="btn-primary"
                     style={{
-                        flex: 2,
+                        flex: 7,
                         padding: '1.1rem',
                         fontSize: '1.25rem',
                         borderRadius: 'var(--radius-md)',
@@ -233,14 +233,11 @@ const SetupScreen = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         gap: '0.5rem',
-                        background: 'rgba(255, 215, 0, 0.05)',
-                        border: '1px solid rgba(255,215,0,0.2)',
                         color: 'var(--gold)',
                         fontWeight: 600,
-                        transition: 'all 0.2s ease'
                     }}
                 >
-                    🏆 Top 50
+                    🏆
                 </button>
             </div>
 
