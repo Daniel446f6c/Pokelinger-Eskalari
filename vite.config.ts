@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      workbox: {
+        cleanupOutdatedCaches: true,
+      },
       includeAssets: ['favicon.ico', 'favicon-96x96.png', 'apple-touch-icon.png', 'logo.svg'],
       manifest: {
         name: 'Pokelinger Eskalari',
