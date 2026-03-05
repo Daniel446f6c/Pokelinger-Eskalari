@@ -41,9 +41,9 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose }) 
     return createPortal(
         <div className="modal-overlay" style={{ zIndex: 300 }}>
             <div className="glass-panel modal-content" style={{
-                width: '95%',
-                maxWidth: '600px',
-                padding: '2rem',
+                width: '90%',
+                maxWidth: '480px',
+                padding: '1.5rem',
                 maxHeight: '90vh',
                 display: 'flex',
                 flexDirection: 'column'
@@ -69,8 +69,7 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose }) 
                         alignItems: 'center',
                         gap: '0.75rem'
                     }}>
-                        <span style={{ filter: 'drop-shadow(0 0 10px hsla(42, 85%, 55%, 0.4))' }}>🏆</span>
-                        Ruhmeshalle
+                        🏆 Hall of Fame
                     </h2>
                     <button
                         onClick={onClose}
@@ -120,7 +119,7 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose }) 
                 </div>
 
                 {/* Table Content (Scrollable) */}
-                <div style={{ overflowY: 'auto', flex: 1, paddingRight: '0.5rem' }}>
+                <div style={{ overflowX: 'hidden', overflowY: 'auto', flex: 1, paddingRight: '0.5rem' }}>
                     <LeaderboardTable entries={activeScores} loading={loading} />
                 </div>
             </div>

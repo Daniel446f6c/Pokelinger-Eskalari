@@ -31,6 +31,12 @@ const SetupScreen = () => {
     };
 
     const handleStart = () => {
+        for (const name of names) {
+            if (name.length > 20) {
+                alert('Namen dürfen maximal 20 Zeichen lang sein.');
+                return;
+            }
+        }
         startGame(names, mode);
     };
 
@@ -149,6 +155,7 @@ const SetupScreen = () => {
                             value={name}
                             onChange={(e) => handleNameChange(idx, e.target.value)}
                             placeholder={`Name von Spieler ${idx + 1}`}
+                            maxLength={20}
                             style={{
                                 width: '100%',
                                 boxSizing: 'border-box'

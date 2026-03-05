@@ -406,3 +406,36 @@ input[type="checkbox"]:hover {
 .last-updated {
   animation: gold-shimmer 0.6s ease-out;
 }
+
+.pwa-toast {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+  min-width: 320px;
+  max-width: 90vw;
+}
+
+.pwa-message {
+  font-weight: 500;
+  font-size: 1.05rem;
+  color: var(--text-main);
+}
+
+.pwa-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+
+.pwa-buttons button {
+  flex: 1;
+}
