@@ -18,7 +18,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, loading })
     if (entries.length === 0) {
         return (
             <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                Noch keine Einträge in der Ruhmeshalle.
+                Noch keine Einträge...
             </div>
         );
     }

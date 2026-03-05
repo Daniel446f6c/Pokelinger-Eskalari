@@ -68,9 +68,10 @@ const GameScreen = () => {
                             textTransform: 'uppercase',
                             letterSpacing: '0.5px'
                         }}>
-                            {mode === '3-fach' ? '3-Fach' : 'Klassisch'}
+                            {mode === 'classic' ? 'Klassisch' : mode === '2-fach' ? '2-Fach' : '3-Fach'}
                         </span>
                         {mode === '3-fach' && <span style={{ opacity: 0.7 }}>x1, x2, x3</span>}
+                        {mode === '2-fach' && <span style={{ opacity: 0.7 }}>x1, x2</span>}
                     </span>
                 </div>
 

@@ -23,7 +23,7 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     const [currentTurnPlayerIndex, setCurrentTurnPlayerIndex] = useState(0);
 
     const startGame = (playerNames: string[], selectedMode: GameMode) => {
-        const numCols = selectedMode === '3-fach' ? 3 : 1;
+        const numCols = selectedMode === '3-fach' ? 3 : selectedMode === '2-fach' ? 2 : 1;
 
         const newPlayers: Player[] = playerNames.map((name, index) => {
             const columns = Array(numCols).fill(null).map(() => {

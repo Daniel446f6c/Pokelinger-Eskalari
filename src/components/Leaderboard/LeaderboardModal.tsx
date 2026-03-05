@@ -9,8 +9,8 @@ interface LeaderboardModalProps {
 }
 
 const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose }) => {
-    const { scoresClassic, scores3Fach, loading } = useLeaderboard();
-    const [activeTab, setActiveTab] = useState<'classic' | '3-fach'>('3-fach');
+    const { scoresClassic, scores2Fach, scores3Fach, loading } = useLeaderboard();
+    const [activeTab, setActiveTab] = useState<'classic' | '2-fach' | '3-fach'>('3-fach');
 
     useEffect(() => {
         if (isOpen) {
@@ -36,7 +36,7 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose }) 
 
     if (!isOpen) return null;
 
-    const activeScores = activeTab === 'classic' ? scoresClassic : scores3Fach;
+    const activeScores = activeTab === 'classic' ? scoresClassic : activeTab === '2-fach' ? scores2Fach : scores3Fach;
 
     return createPortal(
         <div className="modal-overlay" style={{ zIndex: 300 }}>
@@ -81,41 +81,29 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose }) 
                 </div>
 
                 {/* Tabs */}
-                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
-                    <button
-                        onClick={() => setActiveTab('3-fach')}
-                        style={{
-                            flex: 1,
-                            padding: '0rem',
-                            fontWeight: 600,
-                            borderRadius: 'var(--radius-sm)',
-                            background: activeTab === '3-fach'
-                                ? 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)'
-                                : 'rgba(255, 255, 255, 0.05)',
-                            color: activeTab === '3-fach' ? 'black' : 'white',
-                            border: activeTab === '3-fach' ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                            transition: 'all 0.2s ease'
-                        }}
-                    >
-                        3-Fach (Top 50)
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('classic')}
-                        style={{
-                            flex: 1,
-                            padding: '1rem',
-                            fontWeight: 600,
-                            borderRadius: 'var(--radius-sm)',
-                            background: activeTab === 'classic'
-                                ? 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)'
-                                : 'rgba(255, 255, 255, 0.05)',
-                            color: activeTab === 'classic' ? 'black' : 'white',
-                            border: activeTab === 'classic' ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                            transition: 'all 0.2s ease'
-                        }}
-                    >
-                        Klassisch (Top 50)
-                    </button>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                    {(['3-fach', '2-fach', 'classic'] as const).map((tab) => (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            style={{
+                                flex: 1,
+                                padding: '0.75rem 0.25rem',
+                                fontSize: '0.85rem',
+                                fontWeight: 600,
+                                borderRadius: 'var(--radius-sm)',
+                                background: activeTab === tab
+                                    ? 'linear-gradient(135deg, hsl(42, 85%, 55%) 0%, hsl(57, 90%, 65%) 100%)'
+                                    : 'rgba(255, 255, 255, 0.05)',
+                                color: activeTab === tab ? 'black' : 'white',
+                                border: activeTab === tab ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                                transition: 'all 0.2s ease',
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            {tab === '3-fach' ? '3-Fach' : tab === '2-fach' ? '2-Fach' : 'Klassisch'}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Table Content (Scrollable) */}
