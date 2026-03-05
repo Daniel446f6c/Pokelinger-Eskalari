@@ -178,7 +178,7 @@ const SetupScreen = () => {
                     Spielmodus
                 </label>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    {(['classic', '3-fach'] as const).map(m => (
+                    {(['classic', '2-fach', '3-fach'] as const).map(m => (
                         <button
                             key={m}
                             onClick={() => setMode(m)}
@@ -197,7 +197,7 @@ const SetupScreen = () => {
                                 boxShadow: mode === m ? '0 4px 15px hsla(270, 70%, 50%, 0.4)' : 'none'
                             }}
                         >
-                            {m === 'classic' ? 'Klassisch' : '3-Fach'}
+                            {m === 'classic' ? 'Klassisch' : m === '2-fach' ? '2-Fach' : '3-Fach'}
                             <span style={{
                                 display: 'block',
                                 fontSize: '0.75rem',
@@ -205,7 +205,7 @@ const SetupScreen = () => {
                                 opacity: 0.8,
                                 fontWeight: 400
                             }}>
-                                {m === 'classic' ? '1 Spalte' : '3 Spalten (x1, x2, x3)'}
+                                {m === 'classic' ? '1 Spalte' : m === '2-fach' ? '2 Spalten (x1, x2)' : '3 Spalten (x1, x2, x3)'}
                             </span>
                         </button>
                     ))}

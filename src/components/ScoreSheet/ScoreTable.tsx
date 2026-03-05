@@ -84,7 +84,7 @@ const ScoreTable = () => {
                             return (
                                 <th
                                     key={p.id}
-                                    colSpan={mode === '3-fach' ? 3 : 1}
+                                    colSpan={mode === '3-fach' ? 3 : mode === '2-fach' ? 2 : 1}
                                     style={{
                                         padding: '1rem',
                                         background: isActive
@@ -116,13 +116,13 @@ const ScoreTable = () => {
                             );
                         })}
                     </tr>
-                    {mode === '3-fach' && (
+                    {(mode === '3-fach' || mode === '2-fach') && (
                         <tr>
                             <th></th>
                             {players.map((_, i) => (
-                                <th key={i} colSpan={3} style={{ padding: 0, border: 'none' }}>
+                                <th key={i} colSpan={mode === '3-fach' ? 3 : 2} style={{ padding: 0, border: 'none' }}>
                                     <div style={{ display: 'flex' }}>
-                                        {[1, 2, 3].map(mult => (
+                                        {(mode === '3-fach' ? [1, 2, 3] : [1, 2]).map(mult => (
                                             <div key={mult} style={{
                                                 flex: 1,
                                                 color: 'var(--text-muted)',
@@ -132,7 +132,7 @@ const ScoreTable = () => {
                                                 background: mult === 3
                                                     ? 'rgba(255, 215, 0, 0.05)'
                                                     : mult === 2
-                                                        ? 'rgba(255, 255, 255, 0.02)'
+                                                        ? mode === '2-fach' ? 'rgba(255, 215, 0, 0.05)' : 'rgba(255, 255, 255, 0.02)'
                                                         : 'transparent',
                                                 fontWeight: 600
                                             }}>
@@ -172,7 +172,11 @@ const ScoreTable = () => {
                                             : colIdx === 1
                                                 ? 'rgba(255, 255, 255, 0.01)'
                                                 : 'transparent'
-                                        : 'transparent';
+                                        : mode === '2-fach'
+                                            ? colIdx === 1
+                                                ? 'rgba(255, 215, 0, 0.03)'
+                                                : 'transparent'
+                                            : 'transparent';
 
                                     return (
                                         <td
@@ -260,8 +264,8 @@ const ScoreTable = () => {
                         ))}
                     </tr>
 
-                    {/* GRAND TOTAL ROW FOR 3-FACH */}
-                    {mode === '3-fach' && (
+                    {/* GRAND TOTAL ROW FOR MULTIPLIER MODES */}
+                    {(mode === '3-fach' || mode === '2-fach') && (
                         <tr style={{
                             background: 'linear-gradient(90deg, rgba(255,215,0,0.08) 0%, rgba(255,215,0,0.15) 50%, rgba(255,215,0,0.08) 100%)'
                         }}>
@@ -280,7 +284,7 @@ const ScoreTable = () => {
                                 return (
                                     <td
                                         key={`grand-${p.id}`}
-                                        colSpan={3}
+                                        colSpan={mode === '3-fach' ? 3 : 2}
                                         style={{
                                             textAlign: 'center',
                                             padding: '1.25rem',
@@ -308,7 +312,7 @@ const ScoreTable = () => {
                     onConfirm={handleInputConfirm}
                     rowKey={editingCell.rowKey}
                     playerName={editingCell.playerName}
-                    multiplier={mode === '3-fach' ? editingCell.colIndex + 1 : 1}
+                    multiplier={(mode === '3-fach' || mode === '2-fach') ? editingCell.colIndex + 1 : 1}
                 />
             )}
         </div>

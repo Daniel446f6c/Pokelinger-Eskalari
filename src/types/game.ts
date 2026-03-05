@@ -1,4 +1,4 @@
-export type GameMode = 'classic' | '3-fach';
+export type GameMode = 'classic' | '2-fach' | '3-fach';
 
 export type RowKey = '9' | '10' | 'B' | 'D' | 'K' | 'A' | 'S' | 'F' | 'P' | 'G';
 
@@ -9,6 +9,7 @@ export interface Player {
   name: string;
   // Scores for each column.
   // Classic = 1 column (index 0 used)
+  // 2-Fach = 2 columns
   // 3-Fach = 3 columns
   columns: ScoreColumn[];
 }
