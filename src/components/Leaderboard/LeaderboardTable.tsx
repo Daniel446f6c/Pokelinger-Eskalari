@@ -24,35 +24,37 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, loading })
     }
 
     return (
-        <div style={{ overflowX: 'auto', margin: '1rem 0' }}>
-            <table className="score-table" style={{ width: '100%', minWidth: '400px' }}>
+        <div style={{ margin: '1rem 0' }}>
+            <table className="score-table" style={{ width: '100%', tableLayout: 'fixed' }}>
                 <thead>
                     <tr>
                         <th style={{
-                            padding: '1rem',
+                            padding: '0.75rem 0.25rem',
                             borderBottom: '1px solid rgba(255,255,255,0.08)',
                             color: 'var(--gold)',
                             fontWeight: 700,
                             textAlign: 'center',
-                            width: '60px'
+                            width: '20%'
                         }}>
                             Rang
                         </th>
                         <th style={{
-                            padding: '1rem',
+                            padding: '0.75rem 0.25rem',
                             borderBottom: '1px solid rgba(255,255,255,0.08)',
                             color: 'var(--gold)',
                             fontWeight: 700,
-                            textAlign: 'left'
+                            textAlign: 'left',
+                            width: '55%'
                         }}>
                             Name
                         </th>
                         <th style={{
-                            padding: '1rem',
+                            padding: '0.75rem 0.25rem',
                             borderBottom: '1px solid rgba(255,255,255,0.08)',
                             color: 'var(--gold)',
                             fontWeight: 700,
-                            textAlign: 'right'
+                            textAlign: 'center',
+                            width: '25%'
                         }}>
                             Punkte
                         </th>
@@ -83,23 +85,24 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, loading })
                                 transition: 'background 0.2s'
                             }}>
                                 <td style={{
-                                    padding: '0.75rem 1rem',
+                                    padding: '0.75rem 0.25rem',
                                     textAlign: 'center',
                                     ...rankStyle
                                 }}>
                                     {rankIcon}
                                 </td>
                                 <td style={{
-                                    padding: '0.75rem 1rem',
+                                    padding: '0.75rem 0.25rem',
                                     fontWeight: 600,
                                     color: 'white',
-                                    textShadow: rank === 1 ? '0 0 5px rgba(255, 255, 255, 0.3)' : 'none'
+                                    textShadow: rank === 1 ? '0 0 5px rgba(255, 255, 255, 0.3)' : 'none',
+                                    wordBreak: 'break-word'
                                 }}>
                                     {entry.username}
                                 </td>
                                 <td style={{
-                                    padding: '0.75rem 1rem',
-                                    textAlign: 'right',
+                                    padding: '0.75rem 0.25rem',
+                                    textAlign: 'center',
                                     fontWeight: 700,
                                     color: 'var(--accent-color)'
                                 }}>

@@ -32,8 +32,8 @@ const SetupScreen = () => {
 
     const handleStart = () => {
         for (const name of names) {
-            if (name.length > 20) {
-                alert('Namen dürfen maximal 20 Zeichen lang sein.');
+            if (name.length > 18) {
+                alert('Namen dürfen maximal 18 Zeichen lang sein.');
                 return;
             }
         }
@@ -43,7 +43,6 @@ const SetupScreen = () => {
     return (
         <div className="glass-panel" style={{
             maxWidth: '500px',
-            margin: '2rem auto',
             padding: '2.5rem',
             position: 'relative'
         }}>
@@ -155,7 +154,7 @@ const SetupScreen = () => {
                             value={name}
                             onChange={(e) => handleNameChange(idx, e.target.value)}
                             placeholder={`Name von Spieler ${idx + 1}`}
-                            maxLength={20}
+                            maxLength={18}
                             style={{
                                 width: '100%',
                                 boxSizing: 'border-box'

@@ -81,12 +81,12 @@ const LeaderboardModal: React.FC<LeaderboardModalProps> = ({ isOpen, onClose }) 
                 </div>
 
                 {/* Tabs */}
-                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
                     <button
                         onClick={() => setActiveTab('3-fach')}
                         style={{
                             flex: 1,
-                            padding: '1rem',
+                            padding: '0rem',
                             fontWeight: 600,
                             borderRadius: 'var(--radius-sm)',
                             background: activeTab === '3-fach'
