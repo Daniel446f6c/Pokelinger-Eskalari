@@ -73,6 +73,9 @@ const ScoreTable = () => {
                 <thead>
                     <tr>
                         <th style={{
+                            width: '68px',
+                            minWidth: '68px',
+                            maxWidth: '68px',
                             textAlign: 'center',
                             padding: '0.1rem',
                             fontSize: '1.4rem'

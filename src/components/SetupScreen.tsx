@@ -197,7 +197,7 @@ const SetupScreen = () => {
                                 boxShadow: mode === m ? '0 4px 15px hsla(270, 70%, 50%, 0.4)' : 'none'
                             }}
                         >
-                            {m === 'classic' ? 'Klassisch' : m === '2-fach' ? '2-Fach' : '3-Fach'}
+                            {m === 'classic' ? 'Single' : m === '2-fach' ? '2-Fach' : '3-Fach'}
                             <span style={{
                                 display: 'block',
                                 fontSize: '0.75rem',
