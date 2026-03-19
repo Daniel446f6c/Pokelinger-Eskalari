@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { ref, onValue, push, query, orderByChild, limitToLast } from 'firebase/database';
 import { db, ensureAppCheck } from '../utils/firebase';
 import type { GameMode } from '../types/game';
+import { useToast } from './useToast';
+import { PENDING_SCORES_KEY, type PendingScore } from './useOfflineSync';
 
 export interface LeaderboardEntry {
     id: string;
@@ -19,6 +21,8 @@ export const useLeaderboard = () => {
     const [loading3Fach, setLoading3Fach] = useState(true);
 
     const loading = loadingClassic || loading2Fach || loading3Fach;
+
+    const { showToast } = useToast();
 
     useEffect(() => {
         let classicUnsubscribe: (() => void) | undefined;
@@ -94,20 +98,37 @@ export const useLeaderboard = () => {
     }, []);
 
     const submitScore = async (username: string, score: number, mode: GameMode) => {
-        await ensureAppCheck();
-        const path = mode === 'classic' ? 'leaderboard/classic' : mode === '2-fach' ? 'leaderboard/2-fach' : 'leaderboard/3-fach';
-        const newScoreRef = ref(db, path);
-        try {
-            await push(newScoreRef, {
+        const timestamp = Date.now();
+        
+        const saveOffline = () => {
+            const newPending: PendingScore = {
+                id: Math.random().toString(36).substring(2, 9),
                 username,
                 score,
-                timestamp: Date.now()
-            });
+                mode,
+                timestamp
+            };
+            const stored = localStorage.getItem(PENDING_SCORES_KEY);
+            const pendingScores: PendingScore[] = stored ? JSON.parse(stored) : [];
+            pendingScores.push(newPending);
+            localStorage.setItem(PENDING_SCORES_KEY, JSON.stringify(pendingScores));
+            showToast('Offline: Eintrag lokal gecached. Wird gesendet, sobald die Verbindung wiederhergestellt ist.', 'warning');
+        };
+
+        if (!navigator.onLine) {
+            saveOffline();
+            return;
+        }
+
+        try {
+            await ensureAppCheck();
+            const path = mode === 'classic' ? 'leaderboard/classic' : mode === '2-fach' ? 'leaderboard/2-fach' : 'leaderboard/3-fach';
+            const newScoreRef = ref(db, path);
+            await push(newScoreRef, { username, score, timestamp });
             console.log("Score submitted successfully!");
         } catch (error) {
             console.error("Error submitting score: ", error);
-            // This error will trigger until user puts real credentials in firebase config,
-            // which is expected per user's requests.
+            saveOffline();
         }
     };
 
